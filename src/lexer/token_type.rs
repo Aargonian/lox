@@ -1,6 +1,5 @@
-use strum::Display;
+use strum::{Display, EnumIter};
 
-#[allow(dead_code)]
 #[derive(Debug, Display)]
 pub enum TokenType {
     // Single Character Tokens
@@ -27,28 +26,59 @@ pub enum TokenType {
     LessEqual,
 
     // Identifiers
-    Identifier,
-    String,
-    Number,
+    Identifier(String),
+    String(String),
+    Number(f64),
+    Keyword(Keyword),
+}
 
-    // Keywords
+#[derive(Copy, Clone, Debug, Display, EnumIter)]
+pub enum Keyword {
+    #[strum(message = "and")]
     And,
-    Class,
-    Else,
-    False,
-    Fun,
-    For,
-    If,
-    Nil,
-    Or,
-    Print,
-    Return,
-    Super,
-    This,
-    True,
-    Var,
-    While,
 
-    // EOF
-    Eof,
+    #[strum(message = "class")]
+    Class,
+
+    #[strum(message = "else")]
+    Else,
+
+    #[strum(message = "false")]
+    False,
+
+    #[strum(message = "fun")]
+    Fun,
+
+    #[strum(message = "for")]
+    For,
+
+    #[strum(message = "if")]
+    If,
+
+    #[strum(message = "nil")]
+    Nil,
+
+    #[strum(message = "or")]
+    Or,
+
+    #[strum(message = "print")]
+    Print,
+
+    #[strum(message = "return")]
+    Return,
+
+    #[strum(message = "super")]
+    Super,
+
+    #[strum(message = "this")]
+    This,
+
+    #[strum(message = "true")]
+    True,
+
+    #[strum(message = "var")]
+    Var,
+
+    #[strum(message = "while")]
+    While,
 }

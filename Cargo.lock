@@ -343,6 +343,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "color-eyre",
+ "lazy_static",
  "rstest",
  "strum",
  "thiserror",

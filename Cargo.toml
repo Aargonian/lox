@@ -11,6 +11,7 @@ rstest = "0.18"
 anyhow = "1"
 strum = { version = "0.25", features = ["derive"] }
 thiserror = "1.0.56"
+lazy_static = "1.4.0"
 
 [lints.rust]
 unsafe_code = "forbid"

@@ -2,14 +2,28 @@ mod lexer_error;
 mod token;
 mod token_type;
 
-use std::iter::Peekable;
+use std::collections::HashMap;
 
 pub use lexer_error::*;
+use strum::IntoEnumIterator;
 pub use token::*;
 pub use token_type::*;
 
+use crate::utils::multipeek::{MultiPeekableIterator, MultiPeekable};
+use lazy_static::lazy_static;
+
+lazy_static! {
+    static ref KEYWORDS: HashMap<String, Keyword> = {
+        let mut map = HashMap::new();
+        for keyword in Keyword::iter() {
+            map.insert(keyword.to_string(), keyword);
+        }
+        map
+    };
+}
+
 pub struct Lexer<I: Iterator<Item = char>> {
-    source: Peekable<I>,
+    source: MultiPeekableIterator<I>,
     current_line: usize,
 }
 
@@ -19,7 +33,7 @@ where
 {
     pub fn new(chars: I) -> Self {
         Self {
-            source: chars.peekable(),
+            source: chars.multi_peekable(),
             current_line: 0,
         }
     }
@@ -36,6 +50,61 @@ where
         } else {
             fallback
         }
+    }
+
+    fn parse_string_literal(&mut self) -> Result<TokenType, TokenIteratorError> {
+        let mut collected = String::new();
+        loop {
+            match self.source.next() {
+                Some('"') => break,
+                Some(character) => {
+                    if character == '\n' {
+                        self.current_line += 1;
+                    }
+                    collected.push(character);
+                }
+                None => return Err(TokenIteratorError::UnterminatedString(0, self.current_line))
+            }
+        }
+        Ok(TokenType::String(collected))
+    }
+
+    fn parse_number_literal(&mut self, first_digit: char) -> Result<TokenType, TokenIteratorError> {
+        let mut collected = String::from(first_digit);
+
+        loop {
+            match self.source.peek() {
+                Some(number) if number.is_ascii_digit() => collected.push(self.source.next().expect("Expected a number")),
+                Some('.') => {
+                    match self.source.peek_ahead(1) {
+                        Some(number) if number.is_ascii_digit() => {
+                            collected.push(self.source.next().expect("Expected the dot after peeking"));
+                            collected.push(self.source.next().expect("Expected a value after the dot after peeking."));
+                        }
+                        _ => break,
+                    }
+                }
+                _ => break,
+            }
+        }
+
+        match collected.parse::<f64>() {
+            Ok(num) => Ok(TokenType::Number(num)),
+            Err(_) => Err(TokenIteratorError::InvalidNumber(0, self.current_line))
+        }
+    }
+
+    fn parse_identifier(&mut self, first_character: char) -> TokenType {
+        let mut identifier = String::from(first_character);
+        loop {
+            match self.source.peek() {
+                Some(alpha) if alpha.is_alphanumeric() || *alpha == '_' => identifier.push(self.source.next().expect("No character found")),
+                _ => break,
+            }
+        }
+
+        // Check if identifier is a keyword
+        KEYWORDS.get(&identifier).map_or(TokenType::Identifier(identifier), |keyword| TokenType::Keyword(*keyword))
     }
 
     fn attempt_parse_token(&mut self) -> Result<Token, TokenIteratorError> {
@@ -76,6 +145,21 @@ where
                     self.current_line += 1;
                     continue;
                 }
+                '"' => {
+                    let result = self.parse_string_literal();
+                    match result {
+                        Ok(value) => value,
+                        Err(error) => return Err(error),
+                    }
+                }
+                number if number.is_ascii_digit() => {
+                    let result = self.parse_number_literal(number);
+                    match result {
+                        Ok(value) => value,
+                        Err(error) => return Err(error),
+                    }
+                }
+                alpha if alpha.is_alphabetic() || alpha == '_' => self.parse_identifier(alpha),
                 _ => return Err(TokenIteratorError::UnexpectedCharacter(character, 0, 0)),
             };
 
