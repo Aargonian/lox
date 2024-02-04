@@ -34,51 +34,51 @@ pub enum TokenType {
 
 #[derive(Copy, Clone, Debug, Display, EnumIter)]
 pub enum Keyword {
-    #[strum(message = "and")]
+    #[strum(to_string = "and")]
     And,
 
-    #[strum(message = "class")]
+    #[strum(to_string = "class")]
     Class,
 
-    #[strum(message = "else")]
+    #[strum(to_string = "else")]
     Else,
 
-    #[strum(message = "false")]
+    #[strum(to_string = "false")]
     False,
 
-    #[strum(message = "fun")]
+    #[strum(to_string = "fun")]
     Fun,
 
-    #[strum(message = "for")]
+    #[strum(to_string = "for")]
     For,
 
-    #[strum(message = "if")]
+    #[strum(to_string = "if")]
     If,
 
-    #[strum(message = "nil")]
+    #[strum(to_string = "nil")]
     Nil,
 
-    #[strum(message = "or")]
+    #[strum(to_string = "or")]
     Or,
 
-    #[strum(message = "print")]
+    #[strum(to_string = "print")]
     Print,
 
-    #[strum(message = "return")]
+    #[strum(to_string = "return")]
     Return,
 
-    #[strum(message = "super")]
+    #[strum(to_string = "super")]
     Super,
 
-    #[strum(message = "this")]
+    #[strum(to_string = "this")]
     This,
 
-    #[strum(message = "true")]
+    #[strum(to_string = "true")]
     True,
 
-    #[strum(message = "var")]
+    #[strum(to_string = "var")]
     Var,
 
-    #[strum(message = "while")]
+    #[strum(to_string = "while")]
     While,
 }
