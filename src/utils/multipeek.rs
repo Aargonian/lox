@@ -1,4 +1,4 @@
-struct MultiPeekableIterator<I>
+pub struct MultiPeekableIterator<I>
 where
     I: Iterator,
 {
@@ -8,11 +8,11 @@ where
 }
 
 impl<I> MultiPeekableIterator<I> where I: Iterator {
-    fn new(iter: I) -> Self {
+    pub fn new(iter: I) -> Self {
         Self::with_limit(iter, 0)
     }
 
-    fn with_limit(iter: I, buffer_limit: usize) -> Self {
+    pub fn with_limit(iter: I, buffer_limit: usize) -> Self {
         Self {
             iter,
             buffer: Vec::new(),
@@ -20,11 +20,11 @@ impl<I> MultiPeekableIterator<I> where I: Iterator {
         }
     }
 
-    fn peek(&mut self) -> Option<&I::Item> {
+    pub fn peek(&mut self) -> Option<&I::Item> {
         self.peek_ahead(0)
     }
 
-    fn peek_ahead(&mut self, n: usize) -> Option<&I::Item> {
+    pub fn peek_ahead(&mut self, n: usize) -> Option<&I::Item> {
         if self.buffer_limit > 0 && n >= self.buffer_limit {
             panic!("Attempted to peek beyond the buffer limit!");
         }
@@ -40,7 +40,7 @@ impl<I> MultiPeekableIterator<I> where I: Iterator {
         self.buffer.get(n)
     }
 
-    fn take_next(&mut self) -> Option<I::Item> {
+    pub fn take_next(&mut self) -> Option<I::Item> {
         if !self.buffer.is_empty() {
             Some(self.buffer.remove(0))
         } else {
@@ -65,8 +65,8 @@ impl<I> From<I> for MultiPeekableIterator<I>
     }
 }
 
-trait MultiPeekable : Iterator {
-    fn peekable(self) -> MultiPeekableIterator<Self>
+pub trait MultiPeekable : Iterator {
+    fn multi_peekable(self) -> MultiPeekableIterator<Self>
     where Self: Sized {
         MultiPeekableIterator::with_limit(self, 0)
     }
