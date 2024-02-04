@@ -25,9 +25,7 @@ impl<I> MultiPeekableIterator<I> where I: Iterator {
     }
 
     pub fn peek_ahead(&mut self, n: usize) -> Option<&I::Item> {
-        if self.buffer_limit > 0 && n >= self.buffer_limit {
-            panic!("Attempted to peek beyond the buffer limit!");
-        }
+        assert!(!(self.buffer_limit > 0 && n >= self.buffer_limit), "Attempted to peek beyond the buffer limit!");
 
         while self.buffer.len() <= n {
             if let Some(next_item) = self.iter.next() {
@@ -41,10 +39,10 @@ impl<I> MultiPeekableIterator<I> where I: Iterator {
     }
 
     pub fn take_next(&mut self) -> Option<I::Item> {
-        if !self.buffer.is_empty() {
-            Some(self.buffer.remove(0))
-        } else {
+        if self.buffer.is_empty() {
             self.iter.next()
+        } else {
+            Some(self.buffer.remove(0))
         }
     }
 }
@@ -61,7 +59,7 @@ where I: Iterator {
 impl<I> From<I> for MultiPeekableIterator<I>
     where I: Iterator {
     fn from(iter: I) -> Self {
-        MultiPeekableIterator::new(iter)
+        Self::new(iter)
     }
 }
 
