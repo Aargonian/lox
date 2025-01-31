@@ -17,9 +17,21 @@ lazy_static = "1.4.0"
 unsafe_code = "forbid"
 
 [lints.clippy]
+# Make the all group denied
+all = { level = "deny", priority = -1 }
+
+# Ignored some pedantic warnings
+must_use_candidate = { level = "allow", priority = 1 }
+module_name_repetitions = { level = "allow", priority = 1 }
+missing_errors_doc = { level = "allow", priority = 1 }
+missing_const_for_fn = { level = "allow", priority = 1 }
+
 enum_glob_use = "deny"
-pedantic = "deny"
 nursery = "deny"
+correctness = "deny"
+complexity = "deny"
+pedantic = "deny"
+perf = "deny"
 unwrap_used = "deny"
 
 [profile.release]
