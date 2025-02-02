@@ -12,6 +12,7 @@ anyhow = "1"
 strum = { version = "0.25", features = ["derive"] }
 thiserror = "1.0.56"
 lazy_static = "1.4.0"
+clap = { version = "4.5.27", features = ["derive"] }
 
 [lints.rust]
 unsafe_code = "forbid"
